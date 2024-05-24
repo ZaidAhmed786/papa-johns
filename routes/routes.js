@@ -11,7 +11,7 @@ const CartController = require("../controllers/CartController"); // Import CartC
 require("dotenv").config();
 
 router.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.send("Papa Johns")
 });
 
 //! *** Category Routes *** !//
