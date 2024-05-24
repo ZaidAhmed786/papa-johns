@@ -1,20 +1,19 @@
 const Product = require("../models/ProductSchema"); // Import the Product model
 const SubCategory = require("../models/SubCategorySchema"); // Import the Category model (assuming it exists)
 const mongoose = require("mongoose");
-const cloudinary = require('../utils/cloudinary')
+const cloudinary = require("../utils/cloudinary");
 module.exports = {
   /*** Create Product ***/
   addProduct: async (req, res) => {
     try {
-      const { title, description, price, status, categoryId } =
-        req.body;
+      const { title, description, price, status, categoryId } = req.body;
 
-        if (!req.file) {
-          res.status(404).json({ message: "Product Image is Required!!" });
-          return true;
-        }
-        let image_upload = await cloudinary.uploader.upload(req.file.path);
-        console.log(image_upload);
+      if (!req.file) {
+        res.status(404).json({ message: "Product Image is Required!!" });
+        return true;
+      }
+      let image_upload = await cloudinary.uploader.upload(req.file.path);
+      console.log(image_upload);
 
       // Validate the categoryId is a valid ObjectId and exists in the Category collection
       if (!mongoose.Types.ObjectId.isValid(categoryId)) {
@@ -48,7 +47,9 @@ module.exports = {
   /*** Read All Products ***/
   getProducts: async (req, res) => {
     try {
-      const products = await Product.find().populate("subCategoryId");
+      const products = await Product.find().populate({path:"subCategoryId",  populate: {
+        path: 'categoryId'
+      }});
       res.status(200).json({
         status: "success",
         results: products.length,
@@ -100,7 +101,7 @@ module.exports = {
       res.status(400).json({ status: "fail", message: err.message });
     }
   },
-  
+
   /*** Update Product ***/
   updateProduct: async (req, res) => {
     try {
@@ -123,15 +124,19 @@ module.exports = {
       const newProduct = {
         title: title && title,
         description: description && description,
-        price:  price && price,
+        price: price && price,
         img: image_upload && image_upload.secure_url,
         imgId: image_upload && image_upload.public_id,
         status: status && status,
         categoryId: categoryId && mongoose.Types.ObjectId(categoryId),
-      }
-      const product = await Product.findByIdAndUpdate(req.params.id, newProduct, {
-        new: true, 
-      }).populate("categoryId");
+      };
+      const product = await Product.findByIdAndUpdate(
+        req.params.id,
+        newProduct,
+        {
+          new: true,
+        }
+      ).populate("categoryId");
 
       if (!product) {
         return res
