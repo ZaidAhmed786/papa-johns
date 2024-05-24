@@ -1,5 +1,5 @@
 const Product = require("../models/ProductSchema"); // Import the Product model
-const Category = require("../models/CategorySchema"); // Import the Category model (assuming it exists)
+const SubCategory = require("../models/SubCategorySchema"); // Import the Category model (assuming it exists)
 const mongoose = require("mongoose");
 const cloudinary = require('../utils/cloudinary')
 module.exports = {
@@ -22,7 +22,7 @@ module.exports = {
           .status(400)
           .json({ status: "fail", message: "Invalid categoryId" });
       }
-      const categoryExists = await Category.findById(categoryId);
+      const categoryExists = await SubCategory.findById(categoryId);
       if (!categoryExists) {
         return res
           .status(400)
@@ -36,7 +36,7 @@ module.exports = {
         img: image_upload && image_upload.secure_url,
         imgId: image_upload && image_upload.public_id,
         status,
-        categoryId: mongoose.Types.ObjectId(categoryId),
+        subCategoryId: mongoose.Types.ObjectId(categoryId),
       });
       const product = await newProduct.save();
       res.status(200).json({ status: "success", data: product });
@@ -48,7 +48,7 @@ module.exports = {
   /*** Read All Products ***/
   getProducts: async (req, res) => {
     try {
-      const products = await Product.find().populate("categoryId");
+      const products = await Product.find().populate("subCategoryId");
       res.status(200).json({
         status: "success",
         results: products.length,

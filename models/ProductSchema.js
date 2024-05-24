@@ -31,10 +31,10 @@ const productSchema = new Schema({
     default: "Available",
     required: [true, "Product status is required"],
   },
-  categoryId: {
+  subCategoryId: {
     type: Schema.Types.ObjectId,
-    ref: "Category",
-    required: [true, "Category ID is required"],
+    ref: "SubCategory",
+    required: [true, "SubCategory ID is required"],
   },
   quantity: {
     type: Number,
