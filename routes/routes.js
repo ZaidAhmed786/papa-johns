@@ -10,9 +10,7 @@ const CartController = require("../controllers/CartController"); // Import CartC
 //!! ********************* Routes ********************* --//
 require("dotenv").config();
 
-router.get("/", (req, res) => {
-  res.send("Papa Johns")
-});
+router.get("/", (req, res) => { res.send("<h1>Papa Johns</h1>") }); 
 
 //! *** Category Routes *** !//
 router
