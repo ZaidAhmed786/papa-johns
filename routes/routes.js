@@ -6,13 +6,15 @@ const SubCategoryController = require("../controllers/SubCategoryController");
 const ProductController = require("../controllers/ProductController");
 const AddressController = require("../controllers/AddressController");
 const CartController = require("../controllers/CartController"); // Import CartController
+const cartItemController = require("../controllers/CartItemController"); // Adjust the path as necessary
+const OrderController = require("../controllers/OrderController");
 
 // *********** Import Controller Functions *********** //
 //!! ********************* Routes ********************* --//
 require("dotenv").config();
 
 router.get("/", (req, res) => {
-  res.send("<h1>Papa Johns</h1>");
+  res.render("../public/index.html");
 });
 
 //! *** Category Routes *** !//
@@ -26,6 +28,17 @@ router
   .patch(CategoryController.updateCategory) /*** Update Category ***/
   .delete(CategoryController.deleteCategory); /*** Remove Category ***/
 
+//! *** Cart Item Routes *** !//
+router
+  .route("/api/cartItems")
+  .get(cartItemController.getCartItems) /*** Get all Cart Items ***/
+  .post(cartItemController.createCartItem); /*** Add New Cart Item ***/
+
+router
+  .route("/api/cartItems/:id")
+  .get(cartItemController.getCartItemById) /*** Get a Single Cart Item ***/
+  .patch(cartItemController.updateCartItem) /*** Update Cart Item ***/
+  .delete(cartItemController.deleteCartItem); /*** Remove Cart Item ***/
 //! ***Sub Category Routes *** !//
 router
   .route("/api/sub-categories")
@@ -78,6 +91,17 @@ router
   .patch(CartController.updateCart) /*** Update Cart ***/
   .delete(CartController.deleteCart); /*** Remove Cart ***/
 
+//! *** Order Routes *** !//
+router
+  .route("/api/orders")
+  .get(OrderController.getOrders) /*** Get all Orders ***/
+  .post(OrderController.addOrder); /*** Add New Order ***/
+
+router
+  .route("/api/orders/:id")
+  .get(OrderController.getSingleOrder) /*** Get a Single Order ***/
+  .patch(OrderController.updateOrder) /*** Update Order ***/
+  .delete(OrderController.deleteOrder); /*** Remove Order ***/
 router.all("*", (req, res) => {
   res.send("Route not found");
 });

@@ -1,8 +1,7 @@
 const Order = require("../models/orderSchema");
-const Address = require("../models/AddressSchema");
-const Product = require("../models/ProductSchema");
-const mongoose = require("mongoose");
+const Cart = require("../models/CartSchema"); // Adjust the path as necessary
 const ApiFeatures = require("../utils/ApiFeatures");
+const mongoose = require("mongoose");
 
 module.exports = {
   /*** Create Order ***/
@@ -11,8 +10,7 @@ module.exports = {
       const {
         user,
         card,
-        addressId,
-        items,
+        cartItems,
         totalAmount,
         deliveryFee,
         tax,
@@ -20,42 +18,23 @@ module.exports = {
         status,
       } = req.body;
 
-      // Validate addressId is a valid ObjectId and exists in the Address collection
-      if (!mongoose.Types.ObjectId.isValid(addressId)) {
+      // Validate cartItems is a valid ObjectId and exists in the Cart collection
+      if (!mongoose.Types.ObjectId.isValid(cartItems)) {
         return res
           .status(400)
-          .json({ status: "fail", message: "Invalid addressId" });
+          .json({ status: "fail", message: "Invalid cartItems ID" });
       }
-      const addressExists = await Address.findById(addressId);
-      if (!addressExists) {
+      const cartExists = await Cart.findById(cartItems);
+      if (!cartExists) {
         return res
           .status(400)
-          .json({ status: "fail", message: "Address does not exist" });
-      }
-
-      // Validate items contain valid productId references and exist in the Product collection
-      for (const item of items) {
-        if (!mongoose.Types.ObjectId.isValid(item.productId)) {
-          return res
-            .status(400)
-            .json({ status: "fail", message: "Invalid productId in items" });
-        }
-        const productExists = await Product.findById(item.productId);
-        if (!productExists) {
-          return res
-            .status(400)
-            .json({
-              status: "fail",
-              message: "Product in items does not exist",
-            });
-        }
+          .json({ status: "fail", message: "Cart does not exist" });
       }
 
       const newOrder = new Order({
         user,
         card,
-        address: mongoose.Types.ObjectId(addressId),
-        items,
+        cartItems: mongoose.Types.ObjectId(cartItems),
         totalAmount,
         deliveryFee,
         tax,
@@ -73,7 +52,7 @@ module.exports = {
   getOrders: async (req, res) => {
     try {
       const features = new ApiFeatures(
-        Order.find().populate("address items.productId"),
+        Order.find().populate("cartItems"),
         req.query
       )
         .filter()
@@ -82,7 +61,11 @@ module.exports = {
         .paginate();
 
       const orders = await features.query;
-      res.status(200).json({ status: "success", data: orders });
+      res.status(200).json({
+        status: "success",
+        results: orders.length,
+        data: orders,
+      });
     } catch (err) {
       res.status(400).json({ status: "fail", message: err.message });
     }
@@ -91,7 +74,7 @@ module.exports = {
   /*** Read Single Order ***/
   getSingleOrder: async (req, res) => {
     try {
-      const order = await Order.findById(req.params.id);
+      const order = await Order.findById(req.params.id).populate("cartItems");
       if (!order) {
         return res
           .status(404)
@@ -106,15 +89,34 @@ module.exports = {
   /*** Update Order ***/
   updateOrder: async (req, res) => {
     try {
+      const { cartItems } = req.body;
+
+      // If cartItems is being updated, validate it
+      if (cartItems) {
+        if (!mongoose.Types.ObjectId.isValid(cartItems)) {
+          return res
+            .status(400)
+            .json({ status: "fail", message: "Invalid cartItems ID" });
+        }
+        const cartExists = await Cart.findById(cartItems);
+        if (!cartExists) {
+          return res
+            .status(400)
+            .json({ status: "fail", message: "Cart does not exist" });
+        }
+      }
+
       const order = await Order.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true,
-      });
+      }).populate("cartItems");
+
       if (!order) {
         return res
           .status(404)
           .json({ status: "fail", message: "Order not found" });
       }
+
       res.status(200).json({ status: "success", data: order });
     } catch (err) {
       res.status(400).json({ status: "fail", message: err.message });
@@ -125,11 +127,13 @@ module.exports = {
   deleteOrder: async (req, res) => {
     try {
       const order = await Order.findByIdAndDelete(req.params.id);
+
       if (!order) {
         return res
           .status(404)
           .json({ status: "fail", message: "Order not found" });
       }
+
       res.status(204).json({ status: "success", data: null });
     } catch (err) {
       res.status(400).json({ status: "fail", message: err.message });
