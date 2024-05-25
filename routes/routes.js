@@ -30,12 +30,12 @@ router
 
 //! *** Cart Item Routes *** !//
 router
-  .route("/api/cartItems")
+  .route("/api/cart-items")
   .get(cartItemController.getCartItems) /*** Get all Cart Items ***/
   .post(cartItemController.createCartItem); /*** Add New Cart Item ***/
 
 router
-  .route("/api/cartItems/:id")
+  .route("/api/cart-items/:id")
   .get(cartItemController.getCartItemById) /*** Get a Single Cart Item ***/
   .patch(cartItemController.updateCartItem) /*** Update Cart Item ***/
   .delete(cartItemController.deleteCartItem); /*** Remove Cart Item ***/
