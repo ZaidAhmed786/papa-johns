@@ -30,7 +30,7 @@ module.exports = {
   /*** Read All Addresses ***/
    getAddresses: async (req, res) => {
     try {
-        const features = new ApiFeatures(Address.find().populate("productId"), req.query)
+        const features = new ApiFeatures(Address.find(), req.query)
             .filter()
             .sort()
             .limitFields()
@@ -50,7 +50,7 @@ module.exports = {
   /*** Read Single Address ***/
   getSingleAddress: async (req, res) => {
     try {
-      const address = await Address.findById(req.params.id).populate("productId");
+      const address = await Address.findById(req.params.id)
       if (!address) {
         return res.status(404).json({ status: "fail", message: "Address not found" });
       }
@@ -63,23 +63,12 @@ module.exports = {
   /*** Update Address ***/
   updateAddress: async (req, res) => {
     try {
-      const { productId } = req.body;
-
-      // If productId is being updated, validate it
-      if (productId) {
-        if (!mongoose.Types.ObjectId.isValid(productId)) {
-          return res.status(400).json({ status: "fail", message: "Invalid productId" });
-        }
-        const productExists = await Product.findById(productId);
-        if (!productExists) {
-          return res.status(400).json({ status: "fail", message: "Product does not exist" });
-        }
-      }
+     
 
       const address = await Address.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true,
-      }).populate("productId");
+      })
 
       if (!address) {
         return res.status(404).json({ status: "fail", message: "Address not found" });
