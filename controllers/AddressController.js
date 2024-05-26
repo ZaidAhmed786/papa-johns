@@ -7,16 +7,10 @@ module.exports = {
   /*** Create Address ***/
   addAddress: async (req, res) => {
     try {
-      const { country, addressType, streetAddress, aptSteFloor, aptSteFloorNumber, zipCode, productId } = req.body;
+      const { country, addressType, streetAddress, aptSteFloor, aptSteFloorNumber, zipCode } = req.body;
 
       // Validate the productId is a valid ObjectId and exists in the Product collection
-      if (!mongoose.Types.ObjectId.isValid(productId)) {
-        return res.status(400).json({ status: "fail", message: "Invalid productId" });
-      }
-      const productExists = await Product.findById(productId);
-      if (!productExists) {
-        return res.status(400).json({ status: "fail", message: "Product does not exist" });
-      }
+     
 
       const newAddress = new Address({
         country,
@@ -24,8 +18,7 @@ module.exports = {
         streetAddress,
         aptSteFloor,
         aptSteFloorNumber,
-        zipCode,
-        productId: mongoose.Types.ObjectId(productId),
+        zipCode
       });
       const address = await newAddress.save();
       res.status(200).json({ status: "success", data: address });
