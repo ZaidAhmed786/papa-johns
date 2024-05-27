@@ -48,11 +48,11 @@ module.exports = {
   /*** Read All Products ***/
   getProducts: async (req, res) => {
     try {
-      const features = new ApiFeatures(Product.find() .populate({
+      const features = new ApiFeatures(Product.find().populate({
         path: "subCategoryId",
-        populate: {
-          path: "categoryId",
-        },
+        // populate: {
+        //   path: "categoryId",
+        // },
       }), req.query)
 
         .filter()
