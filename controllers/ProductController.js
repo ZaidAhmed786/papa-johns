@@ -2,6 +2,7 @@ const Product = require("../models/ProductSchema"); // Import the Product model
 const SubCategory = require("../models/SubCategorySchema"); // Import the Category model (assuming it exists)
 const mongoose = require("mongoose");
 const cloudinary = require("../utils/cloudinary");
+const ApiFeatures = require("../utils/ApiFeatures");
 module.exports = {
   /*** Create Product ***/
   addProduct: async (req, res) => {
@@ -47,9 +48,19 @@ module.exports = {
   /*** Read All Products ***/
   getProducts: async (req, res) => {
     try {
-      const products = await Product.find().populate({path:"subCategoryId",  populate: {
-        path: 'categoryId'
-      }});
+      const features = new ApiFeatures(Product.find() .populate({
+        path: "subCategoryId",
+        populate: {
+          path: "categoryId",
+        },
+      }), req.query)
+
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate()
+       
+      const products = await features.query;
       res.status(200).json({
         status: "success",
         results: products.length,

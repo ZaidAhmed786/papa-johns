@@ -1,7 +1,5 @@
-const Address = require("../models/AddressSchema"); // Import the Address model
-const Product = require("../models/ProductSchema"); // Import the Product model
-const ApiFeatures = require("../utils/ApiFeatures");  
-const mongoose = require("mongoose");
+const Address = require("../models/AddressSchema"); // Import the Address model 
+const ApiFeatures = require("../utils/ApiFeatures");   
 
 module.exports = {
   /*** Create Address ***/
