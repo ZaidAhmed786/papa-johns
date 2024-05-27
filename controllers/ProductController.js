@@ -50,9 +50,11 @@ module.exports = {
     try {
       const features = new ApiFeatures(Product.find().populate({
         path: "subCategoryId",
-        // populate: {
-        //   path: "categoryId",
-        // },
+        strictPopulate: false,
+        populate: {
+          path: "categoryId",
+          strictPopulate: false,
+        },
       }), req.query)
 
         .filter()
@@ -75,7 +77,7 @@ module.exports = {
   getSingleProduct: async (req, res) => {
     try {
       const product = await Product.findById(req.params.id).populate(
-        "categoryId"
+        "subCategoryId"
       );
       if (!product) {
         return res
@@ -99,8 +101,8 @@ module.exports = {
           .json({ status: "fail", message: "Category ID is required" });
       }
 
-      const products = await Product.find({ categoryId }).populate(
-        "categoryId"
+      const products = await Product.find({ subCategoryId }).populate(
+        "subCategoryId"
       );
 
       res.status(200).json({
@@ -147,7 +149,7 @@ module.exports = {
         {
           new: true,
         }
-      ).populate("categoryId");
+      ).populate("subCategoryId");
 
       if (!product) {
         return res
