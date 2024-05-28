@@ -1,6 +1,6 @@
 const Cart = require("../models/CartSchema");
 const Address = require("../models/AddressSchema");
-const Product = require("../models/ProductSchema");
+const Product = require("../models/CartItemSchema");
 const mongoose = require("mongoose");
 
 module.exports = {

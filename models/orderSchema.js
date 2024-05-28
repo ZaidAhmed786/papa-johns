@@ -33,6 +33,10 @@ const orderSchema = new Schema({
       type: String,
       required: true,
     },
+    zipCode: {
+      type: String,
+      required: true,
+    }
   },
   cartItems: {
     type: Schema.Types.ObjectId,
