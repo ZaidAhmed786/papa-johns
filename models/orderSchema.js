@@ -43,18 +43,7 @@ const orderSchema = new Schema({
     ref: "Cart",
     required: true,
   },
-  totalAmount: {
-    type: Number,
-    required: true,
-  },
-  deliveryFee: {
-    type: Number,
-    required: true,
-  },
-  tax: {
-    type: Number,
-    required: true,
-  },
+ 
   tipPercentage: {
     type: Number,
     default: 15,

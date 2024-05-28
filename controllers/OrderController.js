@@ -7,16 +7,7 @@ module.exports = {
   /*** Create Order ***/
   addOrder: async (req, res) => {
     try {
-      const {
-        user,
-        card,
-        cartItems,
-        totalAmount,
-        deliveryFee,
-        tax,
-        tipPercentage,
-        status,
-      } = req.body;
+      const { user, card, cartItems, tipPercentage } = req.body;
 
       // Validate cartItems is a valid ObjectId and exists in the Cart collection
       if (!mongoose.Types.ObjectId.isValid(cartItems)) {
@@ -34,12 +25,8 @@ module.exports = {
       const newOrder = new Order({
         user,
         card,
-        cartItems: mongoose.Types.ObjectId(cartItems),
-        totalAmount,
-        deliveryFee,
-        tax,
+        cartItems: mongoose.Types.ObjectId(cartItems), 
         tipPercentage,
-        status,
       });
       const order = await newOrder.save();
       res.status(200).json({ status: "success", data: order });
