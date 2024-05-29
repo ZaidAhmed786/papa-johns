@@ -39,15 +39,15 @@ exports.getCartItemById = async (req, res) => {
 // Create a new cart item
 exports.createCartItem = async (req, res) => {
   try {
-    const { product, address } = req.body;
+    const { productId, address } = req.body;
 
     // Validate product is a valid ObjectId and exists in the Product collection
-    if (!mongoose.Types.ObjectId.isValid(product)) {
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res
         .status(400)
         .json({ status: "fail", message: "Invalid product" });
     }
-    const productExists = await Product.findById(product);
+    const productExists = await Product.findById(productId);
     if (!productExists) {
       return res
         .status(400)
@@ -78,16 +78,16 @@ exports.createCartItem = async (req, res) => {
 // Update an existing cart item by ID
 exports.updateCartItem = async (req, res) => {
   try {
-    const { product, address } = req.body;
+    const { productId, address } = req.body;
 
     // Validate product if being updated
     if (product) {
-      if (!mongoose.Types.ObjectId.isValid(product)) {
+      if (!mongoose.Types.ObjectId.isValid(productId)) {
         return res
           .status(400)
           .json({ status: "fail", message: "Invalid product" });
       }
-      const productExists = await Product.findById(product);
+      const productExists = await Product.findById(productId);
       if (!productExists) {
         return res
           .status(400)
@@ -119,7 +119,7 @@ exports.updateCartItem = async (req, res) => {
       }
     )
       .populate("address")
-      .populate("product");
+      .populate("productId");
 
     if (!updatedCartItem) {
       return res
