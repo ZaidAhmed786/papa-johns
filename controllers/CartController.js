@@ -47,7 +47,15 @@ module.exports = {
   /*** Read All Carts ***/
   getCarts: async (req, res) => {
     try {
-      const carts = await Cart.find().populate("address items.productId");
+      const carts = await Cart.find().populate({
+        path: "address",
+        path: "items.productId",
+        populate: [
+          {
+            path: "productId"
+          },
+        ],
+      })
       res.status(200).json({ status: "success", data: carts });
     } catch (err) {
       res.status(400).json({ status: "fail", message: err.message });

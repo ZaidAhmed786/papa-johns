@@ -25,7 +25,7 @@ module.exports = {
       const newOrder = new Order({
         user,
         card,
-        cartItems: mongoose.Types.ObjectId(cartItems), 
+        cartItems: mongoose.Types.ObjectId(cartItems),
         tipPercentage,
       });
       const order = await newOrder.save();
@@ -39,7 +39,20 @@ module.exports = {
   getOrders: async (req, res) => {
     try {
       const features = new ApiFeatures(
-        Order.find().populate("cartItems"),
+        Order.find().populate({
+          path: "cartItems",
+          populate: [
+            {
+              path: "address",
+            },
+            {
+              path: "items.productId",
+              populate: [
+                {path: 'productId'}
+              ]
+            },
+          ],
+        }),
         req.query
       )
         .filter()
@@ -61,7 +74,17 @@ module.exports = {
   /*** Read Single Order ***/
   getSingleOrder: async (req, res) => {
     try {
-      const order = await Order.findById(req.params.id).populate("cartItems");
+      const order = await  Order.find().populate({
+        path: "cartItems",
+        populate: [
+          {
+            path: "address",
+          },
+          {
+            path: "items.productId"
+          },
+        ],
+      })
       if (!order) {
         return res
           .status(404)

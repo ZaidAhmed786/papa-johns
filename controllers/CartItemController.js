@@ -8,7 +8,7 @@ exports.getCartItems = async (req, res) => {
   try {
     const cartItems = await CartItem.find()
       .populate("address")
-      .populate("productId");
+      .populate("product");
     res.status(200).json({
       status: "success",
       results: cartItems.length,
@@ -24,7 +24,7 @@ exports.getCartItemById = async (req, res) => {
   try {
     const cartItem = await CartItem.findById(req.params.id)
       .populate("address")
-      .populate("productId");
+      .populate("product");
     if (!cartItem) {
       return res
         .status(404)
@@ -39,15 +39,15 @@ exports.getCartItemById = async (req, res) => {
 // Create a new cart item
 exports.createCartItem = async (req, res) => {
   try {
-    const { productId, address } = req.body;
+    const { product, address } = req.body;
 
-    // Validate productId is a valid ObjectId and exists in the Product collection
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
+    // Validate product is a valid ObjectId and exists in the Product collection
+    if (!mongoose.Types.ObjectId.isValid(product)) {
       return res
         .status(400)
-        .json({ status: "fail", message: "Invalid productId" });
+        .json({ status: "fail", message: "Invalid product" });
     }
-    const productExists = await Product.findById(productId);
+    const productExists = await Product.findById(product);
     if (!productExists) {
       return res
         .status(400)
@@ -78,16 +78,16 @@ exports.createCartItem = async (req, res) => {
 // Update an existing cart item by ID
 exports.updateCartItem = async (req, res) => {
   try {
-    const { productId, address } = req.body;
+    const { product, address } = req.body;
 
-    // Validate productId if being updated
-    if (productId) {
-      if (!mongoose.Types.ObjectId.isValid(productId)) {
+    // Validate product if being updated
+    if (product) {
+      if (!mongoose.Types.ObjectId.isValid(product)) {
         return res
           .status(400)
-          .json({ status: "fail", message: "Invalid productId" });
+          .json({ status: "fail", message: "Invalid product" });
       }
-      const productExists = await Product.findById(productId);
+      const productExists = await Product.findById(product);
       if (!productExists) {
         return res
           .status(400)
@@ -119,7 +119,7 @@ exports.updateCartItem = async (req, res) => {
       }
     )
       .populate("address")
-      .populate("productId");
+      .populate("product");
 
     if (!updatedCartItem) {
       return res
