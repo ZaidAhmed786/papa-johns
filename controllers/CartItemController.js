@@ -8,7 +8,7 @@ exports.getCartItems = async (req, res) => {
   try {
     const cartItems = await CartItem.find()
       .populate("address")
-      .populate("product");
+      .populate("productId");
     res.status(200).json({
       status: "success",
       results: cartItems.length,
@@ -24,7 +24,7 @@ exports.getCartItemById = async (req, res) => {
   try {
     const cartItem = await CartItem.findById(req.params.id)
       .populate("address")
-      .populate("product");
+      .populate("productId");
     if (!cartItem) {
       return res
         .status(404)
